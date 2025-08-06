@@ -29,8 +29,7 @@
       "description": "Main subjects discussed or covered",
       "items": {
         "type": "string",
-        "minLength": 2,
-        "maxLength": 100
+        "minLength": 2
       },
       "minItems": 1,
       "maxItems": 20
