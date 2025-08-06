@@ -1,0 +1,321 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Summary Data Schema",
+  "description": "Schema for storing structured summaries from unorganized information sources",
+  "type": "object",
+  "required": [
+    "title",
+    "executive_summary",
+    "key_topics",
+    "people_roles",
+    "keywords",
+    "created_date"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Meaningful title summarizing the content",
+      "minLength": 5,
+      "maxLength": 200
+    },
+    "executive_summary": {
+      "type": "string",
+      "description": "2-3 sentences capturing the main points",
+      "minLength": 50,
+      "maxLength": 500
+    },
+    "key_topics": {
+      "type": "array",
+      "description": "Main subjects discussed or covered",
+      "items": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 100
+      },
+      "minItems": 1,
+      "maxItems": 20
+    },
+    "decisions_made": {
+      "type": "array",
+      "description": "Conclusions, agreements, or determinations",
+      "items": {
+        "type": "object",
+        "required": ["decision", "context"],
+        "properties": {
+          "decision": {
+            "type": "string",
+            "description": "The specific decision made",
+            "minLength": 5
+          },
+          "context": {
+            "type": "string",
+            "description": "Background or reasoning for the decision"
+          },
+          "decision_maker": {
+            "type": "string",
+            "description": "Person or group who made the decision"
+          },
+          "impact": {
+            "type": "string",
+            "description": "Expected impact or consequences of the decision"
+          }
+        }
+      }
+    },
+    "important_information": {
+      "type": "array",
+      "description": "Critical details, insights, or updates",
+      "items": {
+        "type": "object",
+        "required": ["information", "importance_level"],
+        "properties": {
+          "information": {
+            "type": "string",
+            "description": "The important information or insight",
+            "minLength": 10
+          },
+          "importance_level": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"],
+            "description": "Level of importance"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category or type of information (e.g., financial, technical, strategic)"
+          },
+          "time_sensitive": {
+            "type": "boolean",
+            "description": "Whether this information is time-sensitive"
+          }
+        }
+      }
+    },
+    "people_roles": {
+      "type": "array",
+      "description": "Key individuals mentioned and their responsibilities",
+      "items": {
+        "type": "object",
+        "required": ["name", "role"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Person's name",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "description": "Their role or responsibility in the context"
+          },
+          "contact_info": {
+            "type": "string",
+            "description": "Email, phone, or other contact information if mentioned"
+          },
+          "department": {
+            "type": "string",
+            "description": "Department or team they belong to"
+          },
+          "responsibilities": {
+            "type": "array",
+            "description": "Specific responsibilities or commitments mentioned",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "next_steps": {
+      "type": "array",
+      "description": "Immediate actions or follow-ups needed",
+      "items": {
+        "type": "object",
+        "required": ["action", "priority"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "Specific action to be taken",
+            "minLength": 5
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["urgent", "high", "medium", "low"],
+            "description": "Priority level of the action"
+          },
+          "assigned_to": {
+            "type": "string",
+            "description": "Person responsible for the action"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Due date in YYYY-MM-DD format"
+          },
+          "defer_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Defer date in YYYY-MM-DD format when action should start"
+          },
+          "dependencies": {
+            "type": "array",
+            "description": "Other actions or conditions this depends on",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "task_paper": {
+      "type": "string",
+      "description": "TaskPaper formatted text for OmniOutliner/OmniFocus import following TaskPaper guidelines",
+      "pattern": ".*"
+    },
+    "projects": {
+      "type": "array",
+      "description": "Identified projects and their associated tasks",
+      "items": {
+        "type": "object",
+        "required": ["name", "tasks"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Project name",
+            "minLength": 2
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief description of the project"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "on-hold", "completed", "cancelled", "planning"],
+            "description": "Current status of the project"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Project due date in YYYY-MM-DD format"
+          },
+          "defer_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "Project defer date in YYYY-MM-DD format"
+          },
+          "tasks": {
+            "type": "array",
+            "description": "Tasks associated with this project",
+            "items": {
+              "type": "object",
+              "required": ["task", "actionable"],
+              "properties": {
+                "task": {
+                  "type": "string",
+                  "description": "Specific, actionable task description",
+                  "minLength": 5
+                },
+                "actionable": {
+                  "type": "boolean",
+                  "description": "Whether the task is immediately actionable"
+                },
+                "assigned_to": {
+                  "type": "string",
+                  "description": "Person responsible for the task"
+                },
+                "due_date": {
+                  "type": "string",
+                  "format": "date",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "description": "Task due date in YYYY-MM-DD format"
+                },
+                "defer_date": {
+                  "type": "string",
+                  "format": "date",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "description": "Task defer date in YYYY-MM-DD format"
+                },
+                "context": {
+                  "type": "string",
+                  "description": "Context or location where task can be performed"
+                },
+                "tags": {
+                  "type": "array",
+                  "description": "Tags for categorizing the task",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "estimated_duration": {
+                  "type": "string",
+                  "description": "Estimated time to complete (e.g., '30m', '2h', '1d')"
+                },
+                "subtasks": {
+                  "type": "array",
+                  "description": "Nested subtasks",
+                  "items": {
+                    "$ref": "#/properties/projects/items/properties/tasks/items"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "keywords": {
+      "type": "array",
+      "description": "10-20 concise keywords or keyphrases for categorization",
+      "items": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 50,
+        "pattern": "^(?!.*(notes|summary|task)\\b).*$"
+      },
+      "minItems": 10,
+      "maxItems": 20,
+      "uniqueItems": true
+    },
+    "source_info": {
+      "type": "object",
+      "description": "Information about the source material",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["transcript", "voice_memo", "written_notes", "daily_notes", "meeting_notes", "document", "other"],
+          "description": "Type of source material"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "Date of the original content in YYYY-MM-DD format"
+        },
+        "duration": {
+          "type": "string",
+          "description": "Duration if audio/video (e.g., '45m', '1h30m')"
+        },
+        "participants": {
+          "type": "array",
+          "description": "People who participated in creating the source material",
+          "items": {
+            "type": "string"
+          }
+        },
+        "location": {
+          "type": "string",
+          "description": "Location where content was created (physical or virtual)"
+        }
+      }
+    },
+    "created_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this summary was created (ISO 8601 format)"
+    }
+    }
+  },
+  "additionalProperties": false
+}
