@@ -1,0 +1,283 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ADD-Friendly Daily Plan",
+  "type": "object",
+  "required": ["metadata", "overview", "plans"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["date", "created"],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "The date this plan is for (YYYY-MM-DD)"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this plan was created"
+        },
+        "energy_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "Expected energy level for the day"
+        },
+        "location": {
+          "type": "string",
+          "description": "Primary location for the day (home, office, mixed, etc.)"
+        }
+      }
+    },
+    "overview": {
+      "type": "object",
+      "required": ["theme", "top_priorities"],
+      "properties": {
+        "theme": {
+          "type": "string",
+          "description": "Overall theme or focus for the day"
+        },
+        "energy_pattern": {
+          "type": "string",
+          "description": "When you typically have peak focus (e.g., 'Morning Peak Focus')"
+        },
+        "top_priorities": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "required": ["task", "priority"],
+            "properties": {
+              "task": {
+                "type": "string",
+                "description": "The priority task description"
+              },
+              "priority": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5,
+                "description": "Priority rank (1 = highest)"
+              },
+              "time_sensitive": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether this task has a hard deadline today"
+              },
+              "estimated_duration": {
+                "type": "string",
+                "pattern": "^\\d+[hm]$",
+                "description": "Estimated time needed (e.g., '2h', '45m')"
+              }
+            }
+          }
+        },
+        "time_sensitive_items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Items with specific deadlines or appointments"
+        }
+      }
+    },
+    "plans": {
+      "type": "object",
+      "required": ["plan_a"],
+      "properties": {
+        "plan_a": {
+          "$ref": "#/definitions/plan_structure",
+          "description": "Ideal flow plan - everything goes smoothly"
+        },
+        "plan_b": {
+          "$ref": "#/definitions/contingency_plan",
+          "description": "Modified plan for minor delays (15-30 minutes)"
+        },
+        "plan_c": {
+          "$ref": "#/definitions/contingency_plan",
+          "description": "Crisis mode plan - essential items only"
+        }
+      }
+    },
+    "strategic_guidance": {
+      "type": "object",
+      "properties": {
+        "energy_management": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tips for managing energy throughout the day"
+        },
+        "focus_blocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time_range": {
+                "type": "string",
+                "pattern": "^\\d{1,2}:\\d{2}-\\d{1,2}:\\d{2}$",
+                "description": "Time range in HH:MM-HH:MM format"
+              },
+              "purpose": {
+                "type": "string",
+                "description": "What this focus block is for"
+              }
+            }
+          }
+        },
+        "break_schedule": {
+          "type": "string",
+          "description": "Guidelines for when to take breaks"
+        }
+      }
+    },
+    "assistant_notes": {
+      "type": "object",
+      "properties": {
+        "pre_meeting_checklists": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Checklists organized by meeting/task name"
+        },
+        "quick_wins": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Small tasks that can be done between major items"
+        },
+        "reminders": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Important reminders or notes"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "plan_structure": {
+      "type": "object",
+      "required": ["time_blocks"],
+      "properties": {
+        "time_blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/time_block"
+          }
+        },
+        "flexible_time": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time_range": {
+                "type": "string",
+                "pattern": "^\\d{1,2}:\\d{2}-\\d{1,2}:\\d{2}$"
+              },
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "description": "Time slots with multiple possible activities"
+        }
+      }
+    },
+    "contingency_plan": {
+      "type": "object",
+      "required": ["modifications"],
+      "properties": {
+        "modifications": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "What changes from Plan A"
+        },
+        "core_preserved": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Non-negotiable items that must remain"
+        },
+        "deferred_items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tasks that can be moved to another day"
+        },
+        "time_blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/time_block"
+          },
+          "description": "Modified schedule if different from Plan A"
+        }
+      }
+    },
+    "time_block": {
+      "type": "object",
+      "required": ["time_range", "activities"],
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "Name for this time period (e.g., 'Early Morning')"
+        },
+        "time_range": {
+          "type": "string",
+          "pattern": "^\\d{1,2}:\\d{2}-\\d{1,2}:\\d{2}$",
+          "description": "Time range in HH:MM-HH:MM format"
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["time", "task"],
+            "properties": {
+              "time": {
+                "type": "string",
+                "pattern": "^\\d{1,2}:\\d{2}-\\d{1,2}:\\d{2}$",
+                "description": "Specific time slot"
+              },
+              "task": {
+                "type": "string",
+                "description": "What to do during this time"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["focus", "meeting", "admin", "break", "flexible"],
+                "description": "Category of activity"
+              },
+              "subtasks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Bullet points for complex activities"
+              },
+              "preparation_needed": {
+                "type": "string",
+                "description": "What prep is needed before this activity"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
