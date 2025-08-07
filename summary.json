@@ -57,6 +57,12 @@
           "impact": {
             "type": "string",
             "description": "Expected impact or consequences of the decision"
+          },
+          "follow_up_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "When to review or follow up on this decision (YYYY-MM-DD)"
           }
         }
       }
@@ -85,6 +91,12 @@
           "time_sensitive": {
             "type": "boolean",
             "description": "Whether this information is time-sensitive"
+          },
+          "review_date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "description": "When to review this information again (YYYY-MM-DD)"
           }
         }
       }
@@ -156,6 +168,14 @@
             "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
             "description": "Defer date in YYYY-MM-DD format when action should start"
           },
+          "context": {
+            "type": "string",
+            "description": "Context where this action can be performed (@home, @office, @calls, etc.)"
+          },
+          "estimated_duration": {
+            "type": "string",
+            "description": "Estimated time needed (e.g., '30m', '2h', '1d')"
+          },
           "dependencies": {
             "type": "array",
             "description": "Other actions or conditions this depends on",
@@ -168,7 +188,7 @@
     },
     "task_paper": {
       "type": "string",
-      "description": "TaskPaper formatted text for OmniOutliner/OmniFocus import following TaskPaper guidelines",
+      "description": "TaskPaper formatted text for OmniOutliner/OmniFocus import following TaskPaper guidelines with @defer(yyyy-mm-dd) tags",
       "pattern": ".*"
     },
     "projects": {
@@ -189,7 +209,7 @@
           },
           "status": {
             "type": "string",
-            "enum": ["active", "on-hold", "completed", "cancelled", "planning"],
+            "enum": ["active", "on-hold", "completed", "cancelled", "planning", "waiting", "review"],
             "description": "Current status of the project"
           },
           "due_date": {
@@ -203,6 +223,10 @@
             "format": "date",
             "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
             "description": "Project defer date in YYYY-MM-DD format"
+          },
+          "assigned_to": {
+            "type": "string",
+            "description": "Primary person responsible for this project"
           },
           "tasks": {
             "type": "array",
@@ -313,7 +337,6 @@
       "type": "string",
       "format": "date-time",
       "description": "When this summary was created (ISO 8601 format)"
-    }
     }
   },
   "additionalProperties": false
