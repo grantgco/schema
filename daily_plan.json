@@ -16,7 +16,7 @@
         "created": {
           "type": "string",
           "format": "date-time",
-          "description": "When this plan was created"
+          "description": "When this plan was created (ISO 8601 format)"
         },
         "energy_level": {
           "type": "string",
@@ -26,6 +26,28 @@
         "location": {
           "type": "string",
           "description": "Primary location for the day (home, office, mixed, etc.)"
+        },
+        "source_info": {
+          "type": "object",
+          "description": "Information about the source material used to create this plan",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["transcript", "voice_memo", "written_notes", "daily_notes", "meeting_notes", "document", "other"],
+              "description": "Type of source material"
+            },
+            "duration": {
+              "type": "string",
+              "description": "Duration if audio/video (e.g., '45m', '1h30m')"
+            },
+            "participants": {
+              "type": "array",
+              "description": "People who participated in creating the source material",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },
@@ -33,9 +55,21 @@
       "type": "object",
       "required": ["theme", "top_priorities"],
       "properties": {
+        "title": {
+          "type": "string",
+          "description": "Meaningful title for this daily plan",
+          "minLength": 5,
+          "maxLength": 200
+        },
         "theme": {
           "type": "string",
           "description": "Overall theme or focus for the day"
+        },
+        "executive_summary": {
+          "type": "string",
+          "description": "2-3 sentences capturing the day's main focus and goals",
+          "minLength": 50,
+          "maxLength": 500
         },
         "energy_pattern": {
           "type": "string",
@@ -59,6 +93,11 @@
                 "maximum": 5,
                 "description": "Priority rank (1 = highest)"
               },
+              "importance_level": {
+                "type": "string",
+                "enum": ["critical", "high", "medium", "low"],
+                "description": "Level of importance (aligned with summary schema)"
+              },
               "time_sensitive": {
                 "type": "boolean",
                 "default": false,
@@ -68,6 +107,14 @@
                 "type": "string",
                 "pattern": "^\\d+[hm]$",
                 "description": "Estimated time needed (e.g., '2h', '45m')"
+              },
+              "assigned_to": {
+                "type": "string",
+                "description": "Person responsible (if not self)"
+              },
+              "context": {
+                "type": "string",
+                "description": "Context or location where task can be performed (@home, @office, @calls, etc.)"
               },
               "taskpaper_format": {
                 "type": "string",
@@ -82,6 +129,62 @@
             "type": "string"
           },
           "description": "Items with specific deadlines or appointments"
+        },
+        "key_topics": {
+          "type": "array",
+          "description": "Main subjects or focus areas for the day",
+          "items": {
+            "type": "string",
+            "minLength": 2
+          },
+          "minItems": 1,
+          "maxItems": 10
+        },
+        "keywords": {
+          "type": "array",
+          "description": "Keywords for categorization and search",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "minItems": 3,
+          "maxItems": 15,
+          "uniqueItems": true
+        }
+      }
+    },
+    "people_roles": {
+      "type": "array",
+      "description": "Key individuals involved in today's activities",
+      "items": {
+        "type": "object",
+        "required": ["name", "role"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Person's name",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "description": "Their role or involvement in today's activities"
+          },
+          "contact_info": {
+            "type": "string",
+            "description": "Email, phone, or other contact information"
+          },
+          "department": {
+            "type": "string",
+            "description": "Department or team they belong to"
+          },
+          "today_interactions": {
+            "type": "array",
+            "description": "Planned interactions or meetings with this person today",
+            "items": {
+              "type": "string"
+            }
+          }
         }
       }
     },
@@ -110,12 +213,21 @@
               },
               "priority": {
                 "type": "string",
-                "enum": ["low", "medium", "high", "urgent"],
-                "description": "Priority level"
+                "enum": ["urgent", "high", "medium", "low"],
+                "description": "Priority level (aligned with summary schema)"
+              },
+              "importance_level": {
+                "type": "string",
+                "enum": ["critical", "high", "medium", "low"],
+                "description": "Level of importance"
               },
               "project": {
                 "type": "string",
                 "description": "Parent project this task belongs to"
+              },
+              "assigned_to": {
+                "type": "string",
+                "description": "Person responsible for this deadline"
               },
               "taskpaper_format": {
                 "type": "string",
@@ -134,10 +246,14 @@
                 "type": "string",
                 "description": "Project name"
               },
+              "description": {
+                "type": "string",
+                "description": "Brief description of the project"
+              },
               "status": {
                 "type": "string",
-                "enum": ["planning", "active", "on-hold", "waiting", "review"],
-                "description": "Current project status"
+                "enum": ["planning", "active", "on-hold", "waiting", "review", "completed", "cancelled"],
+                "description": "Current project status (aligned with summary schema)"
               },
               "next_action": {
                 "type": "string",
@@ -148,9 +264,22 @@
                 "format": "date",
                 "description": "Target completion date"
               },
+              "defer_date": {
+                "type": "string",
+                "format": "date",
+                "description": "When to next review this project (YYYY-MM-DD)"
+              },
+              "assigned_to": {
+                "type": "string",
+                "description": "Primary person responsible for this project"
+              },
               "context": {
                 "type": "string",
                 "description": "Where/how this work gets done (@home, @office, @calls, etc.)"
+              },
+              "estimated_duration": {
+                "type": "string",
+                "description": "Estimated total project duration (e.g., '2w', '1m', '3d')"
               },
               "taskpaper_format": {
                 "type": "string",
@@ -179,10 +308,19 @@
                 "format": "date",
                 "description": "When this was added to the list"
               },
+              "defer_date": {
+                "type": "string",
+                "format": "date",
+                "description": "When to review this item next (YYYY-MM-DD)"
+              },
               "energy_required": {
                 "type": "string",
                 "enum": ["low", "medium", "high"],
                 "description": "Energy level needed for this item"
+              },
+              "estimated_duration": {
+                "type": "string",
+                "description": "Estimated time needed (e.g., '30m', '2h', '1d')"
               },
               "taskpaper_format": {
                 "type": "string",
@@ -215,13 +353,55 @@
                 "format": "date",
                 "description": "When to follow up if no response"
               },
+              "defer_date": {
+                "type": "string",
+                "format": "date",
+                "description": "When to check on this next (YYYY-MM-DD)"
+              },
               "project": {
                 "type": "string",
                 "description": "Related project if applicable"
               },
+              "priority": {
+                "type": "string",
+                "enum": ["urgent", "high", "medium", "low"],
+                "description": "Priority level for follow-up"
+              },
               "taskpaper_format": {
                 "type": "string",
                 "description": "Item in TaskPaper format (@waiting @person @defer(YYYY-MM-DD) etc.)"
+              }
+            }
+          }
+        },
+        "decisions_made": {
+          "type": "array",
+          "description": "Decisions that affect future planning",
+          "items": {
+            "type": "object",
+            "required": ["decision", "context"],
+            "properties": {
+              "decision": {
+                "type": "string",
+                "description": "The specific decision made",
+                "minLength": 5
+              },
+              "context": {
+                "type": "string",
+                "description": "Background or reasoning for the decision"
+              },
+              "decision_maker": {
+                "type": "string",
+                "description": "Person or group who made the decision"
+              },
+              "impact": {
+                "type": "string",
+                "description": "Expected impact on planning or priorities"
+              },
+              "follow_up_date": {
+                "type": "string",
+                "format": "date",
+                "description": "When to review or follow up on this decision"
               }
             }
           }
@@ -289,6 +469,34 @@
     "assistant_notes": {
       "type": "object",
       "properties": {
+        "important_information": {
+          "type": "array",
+          "description": "Critical details, insights, or updates for today",
+          "items": {
+            "type": "object",
+            "required": ["information", "importance_level"],
+            "properties": {
+              "information": {
+                "type": "string",
+                "description": "The important information or insight",
+                "minLength": 10
+              },
+              "importance_level": {
+                "type": "string",
+                "enum": ["critical", "high", "medium", "low"],
+                "description": "Level of importance"
+              },
+              "category": {
+                "type": "string",
+                "description": "Category or type of information (e.g., financial, technical, strategic)"
+              },
+              "time_sensitive": {
+                "type": "boolean",
+                "description": "Whether this information is time-sensitive"
+              }
+            }
+          }
+        },
         "pre_meeting_checklists": {
           "type": "object",
           "patternProperties": {
@@ -315,6 +523,49 @@
           },
           "description": "Important reminders or notes"
         },
+        "next_steps": {
+          "type": "array",
+          "description": "Actions identified for future days",
+          "items": {
+            "type": "object",
+            "required": ["action", "priority"],
+            "properties": {
+              "action": {
+                "type": "string",
+                "description": "Specific action to be taken",
+                "minLength": 5
+              },
+              "priority": {
+                "type": "string",
+                "enum": ["urgent", "high", "medium", "low"],
+                "description": "Priority level of the action"
+              },
+              "assigned_to": {
+                "type": "string",
+                "description": "Person responsible for the action"
+              },
+              "due_date": {
+                "type": "string",
+                "format": "date",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "description": "Due date in YYYY-MM-DD format"
+              },
+              "defer_date": {
+                "type": "string",
+                "format": "date",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "description": "Defer date in YYYY-MM-DD format when action should start"
+              },
+              "dependencies": {
+                "type": "array",
+                "description": "Other actions or conditions this depends on",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
         "taskpaper_export": {
           "type": "object",
           "description": "Ready-to-use TaskPaper formatted content for external processing",
@@ -334,6 +585,10 @@
             "someday_maybe": {
               "type": "string",
               "description": "Someday/maybe items in TaskPaper format"
+            },
+            "full_export": {
+              "type": "string",
+              "description": "Complete TaskPaper export following TaskPaper guidelines for OmniOutliner/OmniFocus import"
             }
           }
         }
@@ -438,6 +693,18 @@
                 "type": "string",
                 "enum": ["focus", "meeting", "admin", "break", "flexible"],
                 "description": "Category of activity"
+              },
+              "assigned_to": {
+                "type": "string",
+                "description": "Person responsible (if not self)"
+              },
+              "context": {
+                "type": "string",
+                "description": "Where/how this task is performed (@home, @office, @calls, etc.)"
+              },
+              "estimated_duration": {
+                "type": "string",
+                "description": "Expected duration (e.g., '30m', '1h', '90m')"
               },
               "subtasks": {
                 "type": "array",
