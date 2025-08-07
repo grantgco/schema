@@ -68,6 +68,10 @@
                 "type": "string",
                 "pattern": "^\\d+[hm]$",
                 "description": "Estimated time needed (e.g., '2h', '45m')"
+              },
+              "taskpaper_format": {
+                "type": "string",
+                "description": "Task in TaskPaper format for future processing"
               }
             }
           }
@@ -78,6 +82,156 @@
             "type": "string"
           },
           "description": "Items with specific deadlines or appointments"
+        }
+      }
+    },
+    "horizons": {
+      "type": "object",
+      "description": "Future-focused planning and tracking for projects and tasks beyond today",
+      "properties": {
+        "upcoming_deadlines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["task", "due_date"],
+            "properties": {
+              "task": {
+                "type": "string",
+                "description": "Task or project description"
+              },
+              "due_date": {
+                "type": "string",
+                "format": "date",
+                "description": "When this is due (YYYY-MM-DD)"
+              },
+              "days_until_due": {
+                "type": "integer",
+                "description": "Number of days from today until due date"
+              },
+              "priority": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "urgent"],
+                "description": "Priority level"
+              },
+              "project": {
+                "type": "string",
+                "description": "Parent project this task belongs to"
+              },
+              "taskpaper_format": {
+                "type": "string",
+                "description": "Task in TaskPaper format (@due(YYYY-MM-DD) @project(name) @defer(YYYY-MM-DD) etc.)"
+              }
+            }
+          }
+        },
+        "active_projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "status"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Project name"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["planning", "active", "on-hold", "waiting", "review"],
+                "description": "Current project status"
+              },
+              "next_action": {
+                "type": "string",
+                "description": "Next concrete action needed for this project"
+              },
+              "target_date": {
+                "type": "string",
+                "format": "date",
+                "description": "Target completion date"
+              },
+              "context": {
+                "type": "string",
+                "description": "Where/how this work gets done (@home, @office, @calls, etc.)"
+              },
+              "taskpaper_format": {
+                "type": "string",
+                "description": "Project in TaskPaper format with tags including @defer(YYYY-MM-DD) for future review dates"
+              }
+            }
+          }
+        },
+        "someday_maybe": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["item", "category"],
+            "properties": {
+              "item": {
+                "type": "string",
+                "description": "Thing you might want to do someday"
+              },
+              "category": {
+                "type": "string",
+                "enum": ["project", "learning", "experience", "purchase", "misc"],
+                "description": "Type of someday/maybe item"
+              },
+              "added_date": {
+                "type": "string",
+                "format": "date",
+                "description": "When this was added to the list"
+              },
+              "energy_required": {
+                "type": "string",
+                "enum": ["low", "medium", "high"],
+                "description": "Energy level needed for this item"
+              },
+              "taskpaper_format": {
+                "type": "string",
+                "description": "Item in TaskPaper format (@someday @defer(YYYY-MM-DD) @category etc.)"
+              }
+            }
+          }
+        },
+        "waiting_for": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["item", "waiting_on"],
+            "properties": {
+              "item": {
+                "type": "string",
+                "description": "What you're waiting for"
+              },
+              "waiting_on": {
+                "type": "string",
+                "description": "Who or what you're waiting on"
+              },
+              "date_requested": {
+                "type": "string",
+                "format": "date",
+                "description": "When you made the request"
+              },
+              "follow_up_date": {
+                "type": "string",
+                "format": "date",
+                "description": "When to follow up if no response"
+              },
+              "project": {
+                "type": "string",
+                "description": "Related project if applicable"
+              },
+              "taskpaper_format": {
+                "type": "string",
+                "description": "Item in TaskPaper format (@waiting @person @defer(YYYY-MM-DD) etc.)"
+              }
+            }
+          }
+        },
+        "weekly_review_items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Items to review in weekly planning sessions"
         }
       }
     },
@@ -160,6 +314,28 @@
             "type": "string"
           },
           "description": "Important reminders or notes"
+        },
+        "taskpaper_export": {
+          "type": "object",
+          "description": "Ready-to-use TaskPaper formatted content for external processing",
+          "properties": {
+            "today_tasks": {
+              "type": "string",
+              "description": "Today's tasks in TaskPaper format"
+            },
+            "projects": {
+              "type": "string",
+              "description": "Active projects in TaskPaper format"
+            },
+            "waiting_for": {
+              "type": "string",
+              "description": "Waiting for items in TaskPaper format"
+            },
+            "someday_maybe": {
+              "type": "string",
+              "description": "Someday/maybe items in TaskPaper format"
+            }
+          }
         }
       }
     }
@@ -273,6 +449,10 @@
               "preparation_needed": {
                 "type": "string",
                 "description": "What prep is needed before this activity"
+              },
+              "taskpaper_format": {
+                "type": "string",
+                "description": "Activity in TaskPaper format with appropriate tags"
               }
             }
           }
